@@ -1,13 +1,3 @@
-// The Nature of Code
-// Daniel Shiffman
-// http://natureofcode.com
-
-// Evolution EcoSystem
-
-// The World we live in
-// Has bloops and food
-
-// Constructor
 class World {
     constructor(num) {
       // Start with initial food and creatures
