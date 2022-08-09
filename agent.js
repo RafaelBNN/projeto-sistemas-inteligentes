@@ -10,13 +10,24 @@ class Agent{
         stroke(0);
         fill(255,255,0);
         circle(this.position.x, this.position.y, this.size);
-        //this.keyPressed().keyCode = null;
         this.wander();
+    }
+
+    eat(f) {
+        let food = f.getFood();
+        // Are we touching any food objects?
+        for (let i = food.length - 1; i >= 0; i--) {
+          let foodLocation = food[i];
+          let d = p5.Vector.dist(this.position, foodLocation);
+          if (d < this.r/2) {
+            food.splice(i, 1);
+          }
+        }
     }
 
     wander() {
 
-        let qui = floor(random(0,10));
+        let qui = floor(random(0,4));
 
         if (qui === 0 && previous != 1) {
             this.position = createVector(this.position.x - GRID_SIZE, this.position.y);
@@ -33,4 +44,6 @@ class Agent{
         }
     
     }
+
+
 }
