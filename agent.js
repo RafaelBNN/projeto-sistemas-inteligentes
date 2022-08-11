@@ -4,6 +4,7 @@ class Agent{
     constructor(x=width/2 + GRID_SIZE/2, y= height/2 + GRID_SIZE/2){
         this.position = createVector(x, y);
         this.size = GRID_SIZE - 2;
+        this.r = this.size;
     }
 
     run(){
@@ -45,5 +46,11 @@ class Agent{
     
     }
 
+    borders() {
+        if (this.position.x < -this.r / 2) this.position.x = width + this.r / 2;
+        if (this.position.y < -this.r / 2) this.position.y = height + this.r / 2;
+        if (this.position.x > width + this.r / 2) this.position.x = -this.r / 2;
+        if (this.position.y > height + this.r / 2) this.position.y = -this.r / 2;
+      }
 
 }

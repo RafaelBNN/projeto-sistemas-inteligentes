@@ -1,41 +1,40 @@
 class World {
-    constructor(num) {
-      // Start with initial food and creatures
-      this.food = new Food(num);
-      this.bloops = []; // An array for all creatures
-      for (let i = 0; i < num; i++) {
-        let l = createVector(random(width), random(height));
-        let dna = new DNA();
-        this.bloops.push(new Bloop(l, dna));
-      }
-    }
-  
-    // Make a new creature
-    born(x, y) {
-      let l = createVector(x, y);
-      let dna = new DNA();
-      this.bloops.push(new Bloop(l, dna));
-    }
-  
+  constructor(num) {
+    this.food = new Food(num);
+    this.agents = []; // An array for all creatures
+    //this.agents.push(new Bloop(createVector(0,0)));
+    this.agents.push(new Agent());
+    this.terrain = new Terrain();
+    this.terrain.generateTerrain();
+  }  
     // Run the world
-    run() {
-      // Deal with food
-      this.food.run();
+  run() {
+    this.display();
+    this.update();
+  }
   
-      // Cycle through the ArrayList backwards b/c we are deleting
-      for (let i = this.bloops.length - 1; i >= 0; i--) {
-        // All bloops run and eat
-        let b = this.bloops[i];
-        b.run();
-        b.eat(this.food);
-        // If it's dead, kill it and make food
-        if (b.dead()) {
-          this.bloops.splice(i, 1);
-          this.food.add(b.position);
-        }
-        // Perhaps this bloop would like to make a baby?
-        let child = b.reproduce();
-        if (child != null) this.bloops.push(child);
-      }
+  update() {
+    // Deal with food
+    this.food.run();
+
+    // Cycle through the ArrayList backwards b/c we are deleting
+    for (let i = this.agents.length - 1; i >= 0; i--) {
+      // All bloops run and eat
+      let b = this.agents[i];
+      b.run(this.food.food);
+      b.eat(this.food);
     }
+  }
+  
+  display() {
+    this.terrain.draw_map();
+    strokeWeight(1);
+    stroke(127,127,127,127);
+    for (let i = 0; i < width; i = i + GRID_SIZE) {
+      line(i, 0, i, height);
+    }
+    for (let j = 0; j < height; j = j + GRID_SIZE) {
+      line(0, j,width, j);
+    }
+  }
   }
