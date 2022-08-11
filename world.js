@@ -21,7 +21,7 @@ class World {
     for (let i = this.agents.length - 1; i >= 0; i--) {
       // All bloops run and eat
       let b = this.agents[i];
-      b.run(this.food.food);
+      b.run(this.food.food, this.terrain.board);
       b.eat(this.food);
     }
   }

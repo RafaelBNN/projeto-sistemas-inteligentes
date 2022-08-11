@@ -1,17 +1,18 @@
 let previous;
+let totalWeight = 0;
 
 class Agent{
-    constructor(x=width/2 + GRID_SIZE/2, y= height/2 + GRID_SIZE/2){
-        this.position = createVector(x, y);
+    constructor(x=width/2, y= height/2){
+        this.position = createVector(x + GRID_SIZE/2, y + GRID_SIZE/2);
         this.size = GRID_SIZE - 2;
         this.r = this.size;
     }
 
-    run(){
+    run(food, board){
         stroke(0);
         fill(255,255,0);
         circle(this.position.x, this.position.y, this.size);
-        this.wander();
+        this.wander(board);
     }
 
     eat(f) {
@@ -26,9 +27,9 @@ class Agent{
         }
     }
 
-    wander() {
+    wander(board) {
 
-        let qui = floor(random(0,4));
+        let qui = floor(random(0,5));
 
         if (qui === 0 && previous != 1) {
             this.position = createVector(this.position.x - GRID_SIZE, this.position.y);
@@ -42,15 +43,22 @@ class Agent{
 
         if(qui < 4){
             previous = qui;
+            switch(board[floor(this.position.x/GRID_SIZE)][floor(this.position.y/GRID_SIZE)]){
+                case 0: totalWeight+=2; break; // se for agua
+                case 1: totalWeight+=1; break; // se for areia
+                case 2: totalWeight+=0; break; // se for lama
+                case 3: totalWeight+=1000; break; // se for obstavulo
+            }
+            console.log("Peso total: " + totalWeight);
         }
     
     }
 
     borders() {
-        if (this.position.x < -this.r / 2) this.position.x = width + this.r / 2;
-        if (this.position.y < -this.r / 2) this.position.y = height + this.r / 2;
-        if (this.position.x > width + this.r / 2) this.position.x = -this.r / 2;
-        if (this.position.y > height + this.r / 2) this.position.y = -this.r / 2;
+        if (this.position.x < GRID_SIZE) this.position.x = width + GRID_SIZE/2;
+        if (this.position.y < GRID_SIZE) this.position.y = height + GRID_SIZE/2;
+        if (this.position.x > width + GRID_SIZE/2) this.position.x = GRID_SIZE;
+        if (this.position.y > height + GRID_SIZE/2) this.position.y = GRID_SIZE;
       }
 
 }

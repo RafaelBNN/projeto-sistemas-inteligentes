@@ -50,12 +50,17 @@ class Terrain {
       for (let j = 0; j < this.rows; j++) {
         let noise_val = noise(i / noise_scale, j / noise_scale, iterations);
 
-        if (noise_val < 0.3) {
+        if (noise_val < 0.25) {
           this.board[i][j] = WATER;
-        } else if (noise_val < 0.4) {
+        }
+        else if (noise_val < 0.6) {
           this.board[i][j] = SAND;
-        } else {
-          this.board[i][j] = MUD;
+        }
+        else if (noise_val < 0.8) {
+            this.board[i][j] = MUD;
+        }
+        else {
+          this.board[i][j] = OBSTACLE;
         }
       }
     }
