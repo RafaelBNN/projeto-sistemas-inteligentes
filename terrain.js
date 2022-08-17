@@ -6,14 +6,16 @@ const MUD = 2;
 const OBSTACLE = 3;
 const PLAYER = 4;
 const FOOD = 5;
+const VISITED = 6;
 
-const color = new Array(6);
+const color = new Array(7);
 color[SAND] = [230, 197, 37];
 color[MUD] = [92, 51, 18];
 color[WATER] = [95, 116, 222];
 color[OBSTACLE] = [50, 50, 50];
 color[PLAYER] = [84, 191, 113];
 color[FOOD] = [191, 84, 130];
+color[VISITED] = [25, 25, 25];
 
 class Terrain {
   constructor() {

@@ -31,8 +31,9 @@ class Agent{
             // }
         }
         else{
-            this.update();
+            this.update(terrain);
             this.display();
+            this.borders();
         }
     }
 
@@ -54,10 +55,11 @@ class Agent{
         }
     }
 
-    bfs(){
+    bfs(terrain){
         let queue = [];
         let visited = [];
-        let current = this.position;
+        let discretePosition = createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE));
+        let current = discretePosition.copy(); // iniciamos com a posicao de grid atual
         queue.push(current);
         visited.push(current);
         while(queue.length > 0){
@@ -65,11 +67,35 @@ class Agent{
             let neighbors = this.getNeighbors(current);
             for(let i = 0; i < neighbors.length; i++){
                 if(!visited.includes(neighbors[i])){
-                    queue.push(neighbors[i]);
-                    visited.push(neighbors[i]);
+                    //queue.push(neighbors[i]);
+                    //visited.push(neighbors[i]);
+                    terrain.board[neighbors[i].x][neighbors[i].y] = VISITED;
                 }
             }
         }
+    }
+
+    getNeighbors(current){
+        let neighbors = [];
+        let x = current.x;
+        let y = current.y;
+        if(x > 0){
+            neighbors.push(createVector(x-1, y));
+            //neighbors.push(terrain.board[x-1][y]);
+        }
+        if(x < width/GRID_SIZE - 1){
+            neighbors.push(createVector(x+1, y));
+            //neighbors.push(terrain.board[x+1][y]);
+        }
+        if(y > 0){
+            neighbors.push(createVector(x, y-1));
+            //neighbors.push(terrain.board[x][y-1]);
+        }
+        if(y < height/GRID_SIZE - 1){
+            neighbors.push(createVector(x, y+1));
+            //neighbors.push(terrain.board[x][y+1]);
+        }
+        return neighbors;
     }
 
     eat(f) {
@@ -91,25 +117,28 @@ class Agent{
     borders() {
         if (this.position.x < GRID_SIZE) this.position.x = width + GRID_SIZE/2;
         if (this.position.y < GRID_SIZE) this.position.y = height + GRID_SIZE/2;
-        if (this.position.x > width + GRID_SIZE/2) this.position.x = GRID_SIZE;
-        if (this.position.y > height + GRID_SIZE/2) this.position.y = GRID_SIZE;
+        if (this.position.x > width + GRID_SIZE/2) this.position.x = 0;
+        if (this.position.y > height + GRID_SIZE/2) this.position.y = 0;
     }
 
-    update() {
-        // Simple movement based on perlin noise
-        let vx = map(1, 0, 1, -this.maxspeed, this.maxspeed);
-        let vy = map(0.5, 0, 1, -this.maxspeed, this.maxspeed);
-        let velocity = createVector(vx, vy);
+    update(terrain) {
+        // //Simple movement based on perlin noise
+        // let vx = map(1, 0, 1, -this.maxspeed, this.maxspeed);
+        // let vy = map(0.5, 0, 1, -this.maxspeed, this.maxspeed);
+        // let velocity = createVector(vx, vy);
 
-        this.position.add(velocity);
-        // Death always looming
-        this.health -= 0.2;
+        // this.position.add(velocity);
+        // // Death always looming
+        // this.health -= 0.2;
+
+        this.bfs(terrain);
+
     }
 
     display() {
         stroke(0);
         fill(255, 255, 0);
-        circle(this.position.x, this.position.y, this.size);
+        circle(this.position.x + GRID_SIZE/2, this.position.y + GRID_SIZE/2, this.size);
     }
 
     dead() {
