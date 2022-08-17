@@ -11,7 +11,7 @@ const color = new Array(6);
 color[SAND] = [230, 197, 37];
 color[MUD] = [92, 51, 18];
 color[WATER] = [95, 116, 222];
-color[OBSTACLE] = [121, 114, 125];
+color[OBSTACLE] = [50, 50, 50];
 color[PLAYER] = [84, 191, 113];
 color[FOOD] = [191, 84, 130];
 
@@ -37,29 +37,31 @@ class Terrain {
     rectMode(CORNER);
     let c = color[this.board[i][j]];
     fill(c[0], c[1], c[2]);
-    strokeWeight(0.0);
+    stroke(127,127,127,127);
+    strokeWeight(0.5);
     rect(i * GRID_SIZE, j * GRID_SIZE, GRID_SIZE, GRID_SIZE);
     fill(0);
   }
 
   generateTerrain() {
     const noise_scale = 20.0;
-    const iterations = 0;
+    const iterations = 1;
 
     for (let i = 0; i < this.columns; i++) {
       for (let j = 0; j < this.rows; j++) {
         let noise_val = noise(i / noise_scale, j / noise_scale, iterations);
-
-        if (noise_val < 0.25) {
+        const chanceObstacle = random();
+        if (noise_val < 0.3) {
           this.board[i][j] = WATER;
         }
-        else if (noise_val < 0.6) {
-          this.board[i][j] = SAND;
-        }
-        else if (noise_val < 0.8) {
-            this.board[i][j] = MUD;
+        else if (noise_val < 0.4) {
+          this.board[i][j] = MUD;
         }
         else {
+            this.board[i][j] = SAND;
+        }
+        
+        if(chanceObstacle < 0.1){
           this.board[i][j] = OBSTACLE;
         }
       }
