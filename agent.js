@@ -11,24 +11,29 @@ class Agent{
         this.maxspeed = 10;
         this.r = GRID_SIZE;
         this.ordem = 0;
+        this.goal = null;
     }
 
     run(terrain){
-        switch(this.ordem % 10){
-            case 0: this.dfs(); break;
-            case 1: this.bfs(); break;
-            case 2: this.astar(); break;
-            case 3: this.greedy(); break;
-            case 4: this.dijkstra(); break;
-            case 5: this.astar(); break;
-            case 6: this.greedy(); break;
-            case 7: this.bfs(); break;
-            case 8: this.dfs(); break;
-            case 9: this.dijkstra(); break;
-            default: 
+        if(this.goal != null){
+            switch(this.ordem % 10){
+                case 0: this.dfs(); break;
+                case 1: this.bfs(); break;
+                case 2: this.astar(); break;
+                case 3: this.greedy(); break;
+                case 4: this.dijkstra(); break;
+                case 5: this.astar(); break;
+                case 6: this.greedy(); break;
+                case 7: this.bfs(); break;
+                case 8: this.dfs(); break;
+                case 9: this.dijkstra(); break;
+                default: 
+            }
         }
-        this.update();
-        this.display();
+        else{
+            this.update();
+            this.display();
+        }
     }
 
     dfs(){
@@ -84,12 +89,9 @@ class Agent{
     }
 
     display() {
-        ellipseMode(CENTER);
-        stroke(0, 255, 0);
-        fill(255, 0, 0);
-        // ellipse(this.position.x * GRID_SIZE + GRID_SIZE / 2, 
-        //         this.position.y * GRID_SIZE + GRID_SIZE / 2, W);
-        ellipse()
+        stroke(0);
+        fill(255, 255, 0);
+        cirlce(this.position.x, this.position.y, this.size);
     }
 
     dead() {
