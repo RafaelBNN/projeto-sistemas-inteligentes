@@ -16,19 +16,19 @@ class Agent{
 
     run(terrain){
         if(this.goal != null){
-            switch(this.ordem % 10){
-                case 0: this.dfs(); break;
-                case 1: this.bfs(); break;
-                case 2: this.astar(); break;
-                case 3: this.greedy(); break;
-                case 4: this.dijkstra(); break;
-                case 5: this.astar(); break;
-                case 6: this.greedy(); break;
-                case 7: this.bfs(); break;
-                case 8: this.dfs(); break;
-                case 9: this.dijkstra(); break;
-                default: 
-            }
+            // switch(this.ordem % 10){
+            //     case 0: this.dfs(); break;
+            //     case 1: this.bfs(); break;
+            //     case 2: this.astar(); break;
+            //     case 3: this.greedy(); break;
+            //     case 4: this.dijkstra(); break;
+            //     case 5: this.astar(); break;
+            //     case 6: this.greedy(); break;
+            //     case 7: this.bfs(); break;
+            //     case 8: this.dfs(); break;
+            //     case 9: this.dijkstra(); break;
+            //     default: 
+            // }
         }
         else{
             this.update();
@@ -48,6 +48,24 @@ class Agent{
             for(let i = 0; i < neighbors.length; i++){
                 if(!visited.includes(neighbors[i])){
                     stack.push(neighbors[i]);
+                    visited.push(neighbors[i]);
+                }
+            }
+        }
+    }
+
+    bfs(){
+        let queue = [];
+        let visited = [];
+        let current = this.position;
+        queue.push(current);
+        visited.push(current);
+        while(queue.length > 0){
+            current = queue.shift();
+            let neighbors = this.getNeighbors(current);
+            for(let i = 0; i < neighbors.length; i++){
+                if(!visited.includes(neighbors[i])){
+                    queue.push(neighbors[i]);
                     visited.push(neighbors[i]);
                 }
             }
@@ -91,7 +109,7 @@ class Agent{
     display() {
         stroke(0);
         fill(255, 255, 0);
-        cirlce(this.position.x, this.position.y, this.size);
+        circle(this.position.x, this.position.y, this.size);
     }
 
     dead() {

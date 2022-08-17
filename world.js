@@ -2,7 +2,7 @@ class World {
   constructor(num) {
     this.food = new Food(2);
     this.agents = []; // An array for all creatures
-    this.agents.push(new Agent());
+    //this.agents.push(new Agent(createVector(0,0)));
     this.terrain = new Terrain();
     for (let i = 0; i < num; i++) {
       // let l = createVector(random(width), random(height));
@@ -10,7 +10,7 @@ class World {
       this.agents.push(new Agent(l));
     }
     this.terrain.generateTerrain();
-  }  
+  }
   
   // Run the world
   run() {
@@ -33,13 +33,5 @@ class World {
   
   display() {
     this.terrain.draw_map();
-    // strokeWeight(1);
-    // stroke(127,127,127,127);
-    // for (let i = 0; i < width; i = i + GRID_SIZE) {
-    //   line(i, 0, i, height);
-    // }
-    // for (let j = 0; j < height; j = j + GRID_SIZE) {
-    //   line(0, j,width, j);
-    // }
   }
-  }
+}
