@@ -13,6 +13,8 @@ class Agent{
         this.ordem = 0;
         this.goal = null;
         this.debugFlag = true;
+        this.currentFrontier=[createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
+        this.visited = [];
     }
 
     run(terrain){
@@ -52,6 +54,18 @@ class Agent{
                     stack.push(neighbors[i]);
                     visited.push(neighbors[i]);
                 }
+            }
+        }
+    }
+
+    bfsOnce(terrain){
+        let frontier = this.currentFrontier;
+        for(let pixel of frontier){
+            let vizinhos = this.getNeighbors(pixel);
+            for(let vizinho of vizinhos){
+                terrain.board[vizinho.x][vizinho.y] = VISITED; // pintando o quadrado (depois podemos colocar a cor dependendo do tipo de quadrado)
+                console.log("Pintou o quadrado " + vizinho);
+                //this.currentFrontier.push(vizinho);
             }
         }
     }
@@ -136,7 +150,7 @@ class Agent{
             food.splice(i, 1);
             this.score += 1;
             this.ordem += 1;
-            console.log("comeu!");
+            console.log("Placar do agente grupo 2: " + this.score);
           }
         }
     }
@@ -157,11 +171,13 @@ class Agent{
         // this.position.add(velocity);
         // // Death always looming
         // this.health -= 0.2;
-
+        
         if(this.debugFlag){
-            this.bfs(terrain);
+            this.bfsOnce(terrain);
             this.debugFlag = false;
         }
+
+        // this.bfsOnce(terrain);
 
     }
 
