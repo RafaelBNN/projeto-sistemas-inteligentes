@@ -12,6 +12,7 @@ class Agent{
         this.r = GRID_SIZE;
         this.ordem = 0;
         this.goal = null;
+        this.debugFlag = true;
     }
 
     run(terrain){
@@ -56,26 +57,52 @@ class Agent{
     }
 
     bfs(terrain){
-        let queue = [];
-        let visited = [];
+
         let discretePosition = createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE));
-        let current = discretePosition.copy(); // iniciamos com a posicao de grid atual
-        queue.push(current);
-        visited.push(current);
-        while(queue.length > 0){
-            current = queue.shift();
-            let neighbors = this.getNeighbors(current);
+        //let current = discretePosition.copy(); // iniciamos com a posicao de grid atual
+        
+        let frontier = [];
+        frontier.push(discretePosition);
+        console.log(frontier); //debug
+
+        let reached = [];
+        console.log(reached); //debug
+        reached.push(discretePosition);
+        console.log(reached); //debug
+
+        terrain.board[discretePosition.x][discretePosition.y] = VISITED;
+
+        while(frontier.length > 0){
+
+            let current = frontier.shift(); // avanca a fila, tirando o primeiro elemento
+            let neighbors = this.getNeighbors(current); // retorna uma lista de vetores com os vizinhos
+            
             for(let i = 0; i < neighbors.length; i++){
-                if(!visited.includes(neighbors[i])){
-                    //queue.push(neighbors[i]);
-                    //visited.push(neighbors[i]);
-                    terrain.board[neighbors[i].x][neighbors[i].y] = VISITED;
+                if(!reached.includes(neighbors[i])){
+                    terrain.board[neighbors[i].x][neighbors[i].y] = VISITED; // pintando o quadrado (depois podemos colocar a cor dependendo do tipo de quadrado)
+                    console.log("Pintou o quadrado " + neighbors[i]);
+                    //frontier.push(neighbors[i]); // esse vizinho agora esta na fronteira
+                    reached.push(neighbors[i]); // dizemos que esse vizinho ja foi pintado
+                    console.log(reached);
                 }
             }
+
         }
     }
 
-    getNeighbors(current){
+    // bfs(terrain){
+    //     let discretePosition = createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE));
+    //     let current = discretePosition.copy(); // iniciamos com a posicao de grid atual
+
+    //     let frontier = new Queue();
+    //     frontier.enqueue(current);
+
+    //     for(let i=0;i<frontier.length;i++){
+
+    //     }
+    // }
+
+    getNeighbors(current){ //retorna lista de vetores com as coordenadas discretas dos vizinhos
         let neighbors = [];
         let x = current.x;
         let y = current.y;
@@ -131,7 +158,10 @@ class Agent{
         // // Death always looming
         // this.health -= 0.2;
 
-        this.bfs(terrain);
+        if(this.debugFlag){
+            this.bfs(terrain);
+            this.debugFlag = false;
+        }
 
     }
 
@@ -150,3 +180,30 @@ class Agent{
     }
 
 }
+
+class Queue {
+    constructor() {
+      this.elements = {};
+      this.head = 0;
+      this.tail = 0;
+    }
+    enqueue(element) {
+      this.elements[this.tail] = element;
+      this.tail++;
+    }
+    dequeue() {
+      const item = this.elements[this.head];
+      delete this.elements[this.head];
+      this.head++;
+      return item;
+    }
+    peek() {
+      return this.elements[this.head];
+    }
+    get length() {
+      return this.tail - this.head;
+    }
+    get isEmpty() {
+      return this.length === 0;
+    }
+  }
