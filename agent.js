@@ -5,6 +5,8 @@ class Agent{
     constructor(position){
         this.position = createVector(position.x * GRID_SIZE, position.y * GRID_SIZE);
         //this.position = position.copy();
+        this.velocity = createVector(0, 0);
+        this.speed = 1;
         this.score = 0;
         this.size = GRID_SIZE - 2;
         this.health = 200; // Life timer
@@ -18,6 +20,8 @@ class Agent{
         this.horaInicial = 0;
         this.came_from = {};
         this.path = [];
+        this.comeuFlag = false;
+        this.comida = 0;
     }
 
     run(terrain){
@@ -110,6 +114,7 @@ class Agent{
         for (let i = food.length - 1; i >= 0; i--) {
             if(this.visited.find(item => item.x===food[i].x/GRID_SIZE && item.y===food[i].y/GRID_SIZE)){
                 // console.log("Encontrou comida");
+                this.comida = i;
 
                 this.path = [];
                 let current = food[i].x/GRID_SIZE + "," + food[i].y/GRID_SIZE;
@@ -124,6 +129,7 @@ class Agent{
                 }
 
                 this.path.push(this.position.x/GRID_SIZE + "," + this.position.y/GRID_SIZE);
+
                 this.path.reverse();
 
                 console.log("Path: " + this.path);
@@ -131,6 +137,13 @@ class Agent{
             }
 
         }
+
+        if(this.comeuFlag){
+            this.path.shift();
+            food.splice(this.comida, 1);
+            this.comeuFlag = false;
+        }
+        
     }
 
     borders() {
@@ -151,17 +164,20 @@ class Agent{
         let horaAtual = millis();
         //console.log("Hora atual: " + horaAtual);
 
-        if(horaAtual - this.horaInicial > 1000.0 && this.path.length == 0){
+        if(horaAtual - this.horaInicial > 500.0 && this.path.length == 0){
             this.bfsOnce(terrain);
             //console.log("Segunda execução");
             this.horaInicial = horaAtual;
         }
 
-        if(this.path.length > 0){
+        if(this.path.length > 0 && horaAtual - this.horaInicial > 300.0){
+            this.path.shift();
             let next = this.path.shift();
-            let nextPixel = createVector(next.split(",")[0]*GRID_SIZE, next.split(",")[1]*GRID_SIZE);
-            this.velocity = p5.Vector.sub(nextPixel, this.position);
-            this.velocity.setMag(this.speed);
+            this.position = createVector(next.split(",")[0]*GRID_SIZE, next.split(",")[1]*GRID_SIZE);
+            this.horaInicial = horaAtual;
+            if(this.path.length==0){
+                this.comeuFlag = true;
+            }
         }
     }
 
