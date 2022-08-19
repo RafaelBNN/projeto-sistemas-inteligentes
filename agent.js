@@ -14,7 +14,7 @@ class Agent{
         this.r = GRID_SIZE;
         this.ordem = [];
         this.goal = null;
-        this.debugFlag = true;
+        this.startAlgorithm = true;
         this.currentFrontier=[createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
         this.visited = [];
         this.horaInicial = 0;
@@ -22,29 +22,14 @@ class Agent{
         this.path = [];
         this.comeuFlag = false;
         this.comida = 0;
+        this.initialBoard = null;
     }
 
     run(terrain){
-        if(this.goal != null){
-            // switch(this.ordem % 10){
-            //     case 0: this.dfs(); break;
-            //     case 1: this.bfs(); break;
-            //     case 2: this.astar(); break;
-            //     case 3: this.greedy(); break;
-            //     case 4: this.dijkstra(); break;
-            //     case 5: this.astar(); break;
-            //     case 6: this.greedy(); break;
-            //     case 7: this.bfs(); break;
-            //     case 8: this.dfs(); break;
-            //     case 9: this.dijkstra(); break;
-            //     default: 
-            // }
-        }
-        else{
-            this.update(terrain);
-            this.display();
-            this.borders();
-        }
+        this.initialBoard = [...terrain.board];
+        this.update(terrain);
+        this.display();
+        this.borders();
     }
 
     dfs(){
@@ -73,7 +58,12 @@ class Agent{
             for(let vizinho of vizinhos){
                 if(terrain.board[vizinho.x][vizinho.y]!=OBSTACLE){
                     if(!this.visited.find(item => item.x===vizinho.x && item.y===vizinho.y)){
-                        terrain.board[vizinho.x][vizinho.y] = VISITED; // pintando o quadrado (depois podemos colocar a cor dependendo do tipo de quadrado)
+                        switch(terrain.board[vizinho.x][vizinho.y]){
+                            case SAND: terrain.board[vizinho.x][vizinho.y] = VISITED_SAND; break;
+                            case WATER: terrain.board[vizinho.x][vizinho.y] = VISITED_WATER; break;
+                            case MUD: terrain.board[vizinho.x][vizinho.y] = VISITED_MUD; break;
+                        }
+                        //terrain.board[vizinho.x][vizinho.y] = VISITED; 
                         //console.log("Pintou o quadrado " + vizinho);
                         this.currentFrontier.push(vizinho);
                         this.visited.push(vizinho); // dizemos que esse vizinho ja foi pintado
@@ -142,6 +132,7 @@ class Agent{
             this.path.shift();
             food.splice(this.comida, 1);
             this.comeuFlag = false;
+            this.currentFrontier = [createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
         }
         
     }
@@ -155,28 +146,31 @@ class Agent{
 
     update(terrain) {
 
-        if(this.debugFlag && this.path.length == 0){
+        if(this.startAlgorithm && this.path.length == 0){
             this.bfsOnce(terrain);
-            this.debugFlag = false;
+            this.startAlgorithm = false;
             //console.log("Primeira execução");
         }
         
         let horaAtual = millis();
         //console.log("Hora atual: " + horaAtual);
 
-        if(horaAtual - this.horaInicial > 500.0 && this.path.length == 0){
+        if(horaAtual - this.horaInicial > 250.0 && this.path.length == 0){
             this.bfsOnce(terrain);
             //console.log("Segunda execução");
             this.horaInicial = horaAtual;
         }
 
-        if(this.path.length > 0 && horaAtual - this.horaInicial > 300.0){
+        if(this.path.length > 0 && horaAtual - this.horaInicial > (50*terrain.board[this.position.x/GRID_SIZE][this.position.y/GRID_SIZE])){
             this.path.shift();
             let next = this.path.shift();
             this.position = createVector(next.split(",")[0]*GRID_SIZE, next.split(",")[1]*GRID_SIZE);
             this.horaInicial = horaAtual;
             if(this.path.length==0){
                 this.comeuFlag = true;
+                terrain.board = this.initialBoard;
+                console.log("pintou de novo");
+                this.startAlgorithm = true;
             }
         }
     }
@@ -195,8 +189,5 @@ class Agent{
         }
     }
 
-    delay(time) {
-        return new Promise(resolve => setTimeout(resolve, time));
-    }
 
 }

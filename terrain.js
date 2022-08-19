@@ -1,14 +1,17 @@
 // Adapted from https://github.com/vcnovaes/SearchAlgorithmsAnimation
 
-const WATER = 0;
+const WATER = 3;
 const SAND = 1;
 const MUD = 2;
-const OBSTACLE = 3;
+const OBSTACLE = 10;
 const PLAYER = 4;
 const FOOD = 5;
 const VISITED = 6;
+const VISITED_SAND = 7;
+const VISITED_MUD = 9;
+const VISITED_WATER = 8;
 
-const color = new Array(7);
+const color = new Array(10);
 color[SAND] = [230, 197, 37];
 color[MUD] = [92, 51, 18];
 color[WATER] = [95, 116, 222];
@@ -16,6 +19,9 @@ color[OBSTACLE] = [50, 50, 50];
 color[PLAYER] = [84, 191, 113];
 color[FOOD] = [191, 84, 130];
 color[VISITED] = [25, 25, 25];
+color[VISITED_SAND] = [200, 167, 7];
+color[VISITED_MUD] = [72, 31, 0];
+color[VISITED_WATER] = [75, 96, 202];
 
 class Terrain {
   constructor() {
@@ -56,16 +62,16 @@ class Terrain {
         if (noise_val < 0.3) {
           this.board[i][j] = WATER;
         }
-        else if (noise_val < 0.5) {
+        else if (noise_val < 0.4) {
           this.board[i][j] = MUD;
         }
         else {
             this.board[i][j] = SAND;
         }
         
-        if(chanceObstacle < 0.1){
-          this.board[i][j] = OBSTACLE;
-        }
+        // if(chanceObstacle < 0.1){
+        //   this.board[i][j] = OBSTACLE;
+        // }
       }
     }
   }
