@@ -5,15 +5,11 @@ class Agent{
     constructor(position){
         this.position = createVector(position.x * GRID_SIZE, position.y * GRID_SIZE);
         //this.position = position.copy();
-        this.velocity = createVector(0, 0);
-        this.speed = 1;
         this.score = 0;
         this.size = GRID_SIZE - 2;
         this.health = 200; // Life timer
         this.maxspeed = 10;
         this.r = GRID_SIZE;
-        this.ordem = [];
-        this.goal = null;
         this.startAlgorithm = true;
         this.currentFrontier=[createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
         this.visited = [];
@@ -138,7 +134,6 @@ class Agent{
             this.path.shift();
             food.splice(this.comida, 1);
             this.comeuFlag = false;
-            this.currentFrontier = [createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
         }
         
     }
@@ -167,7 +162,7 @@ class Agent{
             this.horaInicial = horaAtual;
         }
 
-        if(this.path.length > 0 && (horaAtual - this.horaInicial > (100*terrain.board[this.position.x/GRID_SIZE][this.position.y/GRID_SIZE]))){
+        if(this.path.length > 0 && (horaAtual - this.horaInicial > (40*terrain.board[this.position.x/GRID_SIZE][this.position.y/GRID_SIZE]))){
             this.path.shift();
             let next = this.path.shift();
             this.position = createVector(next.split(",")[0]*GRID_SIZE, next.split(",")[1]*GRID_SIZE);
@@ -176,6 +171,9 @@ class Agent{
                 this.comeuFlag = true;
                 terrain.board = this.initialBoard; // reseta o board
                 this.startAlgorithm = true;
+                this.currentFrontier = [createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
+                this.visited = [];
+                this.came_from = {};
             }
         }
     }
