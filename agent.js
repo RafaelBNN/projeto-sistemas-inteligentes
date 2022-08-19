@@ -10,7 +10,7 @@ class Agent{
         this.health = 200; // Life timer
         this.maxspeed = 10;
         this.r = GRID_SIZE;
-        this.ordem = 0;
+        this.ordem = [];
         this.goal = null;
         this.debugFlag = true;
         this.currentFrontier=[createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
@@ -73,7 +73,6 @@ class Agent{
     bfs(terrain){
 
         let discretePosition = createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE));
-        //let current = discretePosition.copy(); // iniciamos com a posicao de grid atual
         
         let frontier = [];
         frontier.push(discretePosition);
@@ -172,10 +171,11 @@ class Agent{
         // // Death always looming
         // this.health -= 0.2;
         
-        if(this.debugFlag){
-            this.bfsOnce(terrain);
-            this.debugFlag = false;
-        }
+        //if(this.debugFlag){
+          //  this.bfsOnce(terrain);
+            //this.debugFlag = false;
+        //}
+        this.bfs(terrain)
 
         // this.bfsOnce(terrain);
 
@@ -196,30 +196,3 @@ class Agent{
     }
 
 }
-
-class Queue {
-    constructor() {
-      this.elements = {};
-      this.head = 0;
-      this.tail = 0;
-    }
-    enqueue(element) {
-      this.elements[this.tail] = element;
-      this.tail++;
-    }
-    dequeue() {
-      const item = this.elements[this.head];
-      delete this.elements[this.head];
-      this.head++;
-      return item;
-    }
-    peek() {
-      return this.elements[this.head];
-    }
-    get length() {
-      return this.tail - this.head;
-    }
-    get isEmpty() {
-      return this.length === 0;
-    }
-  }

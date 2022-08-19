@@ -6,7 +6,7 @@ class World {
     this.terrain = new Terrain();
     // let l = createVector(random(width), random(height));
     //let l = createVector(int(random(0, this.terrain.columns)), int(random(0, this.terrain.rows)));
-    let l = createVector(2,2);
+    let l = createVector(12,10);
     this.agents.push(new Agent(l));
     this.terrain.generateTerrain();
   }
