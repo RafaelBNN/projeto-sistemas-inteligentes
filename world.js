@@ -19,12 +19,12 @@ class World {
     this.food.run();
 
     // Cycle through the ArrayList backwards b/c we are deleting
-    for (let i = this.agents.length - 1; i >= 0; i--) {
+    //for (let i = this.agents.length - 1; i >= 0; i--) {
       // All bloops run and eat
-      let b = this.agents[i];
-      b.run(this.terrain);
-      b.eat(this.food);
-    }
+    let b = this.agents[0];
+    b.run(this.terrain);
+    b.eat(this.food);
+    //}
   }
   
   display() {

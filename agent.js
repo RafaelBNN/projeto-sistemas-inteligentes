@@ -34,28 +34,10 @@ class Agent{
         this.borders();
     }
 
-    dfs(){
-        let stack = [];
-        let visited = [];
-        let current = this.position;
-        stack.push(current);
-        visited.push(current);
-        while(stack.length > 0){
-            current = stack.pop();
-            let neighbors = this.getNeighbors(current);
-            for(let i = 0; i < neighbors.length; i++){
-                if(!visited.includes(neighbors[i])){
-                    stack.push(neighbors[i]);
-                    visited.push(neighbors[i]);
-                }
-            }
-        }
-    }
-
     bfsOnce(terrain){
         let frontier = [...this.currentFrontier];
         for(let pixel of frontier){
-            let vizinhos = this.getNeighbors(pixel); // vizinhos recebe a lista de vetores com os vizinhos
+            let vizinhos = this.getNeighborsBfs(pixel); // vizinhos recebe a lista de vetores com os vizinhos
             this.currentFrontier.shift();
             for(let vizinho of vizinhos){
                 if(terrain.board[vizinho.x][vizinho.y]!=OBSTACLE){
@@ -76,7 +58,31 @@ class Agent{
         }
     }
 
-    getNeighbors(current){ //retorna lista de vetores com as coordenadas discretas dos vizinhos
+    dfsOnce(terrain){
+        let frontier = [...this.currentFrontier];
+        for(let pixel of frontier){
+            let vizinhos = this.getNeighborsDfs(pixel); // vizinhos recebe a lista de vetores com os vizinhos
+            this.currentFrontier.pop();
+            for(let vizinho of vizinhos){
+                if(terrain.board[vizinho.x][vizinho.y]!=OBSTACLE){
+                    if(!this.visited.find(item => item.x===vizinho.x && item.y===vizinho.y)){
+                        switch(terrain.board[vizinho.x][vizinho.y]){
+                            case SAND: terrain.board[vizinho.x][vizinho.y] = VISITED_SAND; break;
+                            case WATER: terrain.board[vizinho.x][vizinho.y] = VISITED_WATER; break;
+                            case MUD: terrain.board[vizinho.x][vizinho.y] = VISITED_MUD; break;
+                        }
+                        //terrain.board[vizinho.x][vizinho.y] = VISITED; 
+                        //console.log("Pintou o quadrado " + vizinho);
+                        this.currentFrontier.push(vizinho);
+                        this.visited.push(vizinho); // dizemos que esse vizinho ja foi pintado
+                        this.came_from[vizinho.x + "," + vizinho.y] = pixel.x + "," + pixel.y; // dizemos que esse vizinho veio do pixel atual
+                    }
+                }
+            }
+        }
+    }
+
+    getNeighborsBfs(current){ //retorna lista de vetores com as coordenadas discretas dos vizinhos
         let neighbors = [];
         let x = current.x;
         let y = current.y;
@@ -93,6 +99,29 @@ class Agent{
             //neighbors.push(terrain.board[x][y-1]);
         }
         if(y < height/GRID_SIZE - 1){
+            neighbors.push(createVector(x, y+1));
+            //neighbors.push(terrain.board[x][y+1]);
+        }
+        return neighbors;
+    }
+
+    getNeighborsDfs(current){ //retorna lista de vetores com as coordenadas discretas dos vizinhos
+        let neighbors = [];
+        let x = current.x;
+        let y = current.y;
+        if(x > 0){
+            neighbors.push(createVector(x-1, y));
+            //neighbors.push(terrain.board[x-1][y]);
+        }
+        else if(y > 0){
+            neighbors.push(createVector(x, y-1));
+            //neighbors.push(terrain.board[x][y-1]);
+        }
+        else if(x < width/GRID_SIZE - 1){
+            neighbors.push(createVector(x+1, y));
+            //neighbors.push(terrain.board[x+1][y]);
+        }
+        else if(y < height/GRID_SIZE - 1){
             neighbors.push(createVector(x, y+1));
             //neighbors.push(terrain.board[x][y+1]);
         }
@@ -120,7 +149,7 @@ class Agent{
                     current = this.came_from[current];
                 }
 
-                this.path.push(this.position.x/GRID_SIZE + "," + this.position.y/GRID_SIZE);
+                this.path.push(current);
 
                 this.path.reverse();
 
@@ -156,7 +185,7 @@ class Agent{
         let horaAtual = millis();
         //console.log("Hora atual: " + horaAtual);
 
-        if(horaAtual - this.horaInicial > 250.0 && this.path.length == 0){
+        if(horaAtual - this.horaInicial > 50.0 && this.path.length == 0){
             this.bfsOnce(terrain);
             //console.log("Segunda execução");
             this.horaInicial = horaAtual;
@@ -174,6 +203,7 @@ class Agent{
                 this.currentFrontier = [createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
                 this.visited = [];
                 this.came_from = {};
+                this.comida = 0;
             }
         }
     }
