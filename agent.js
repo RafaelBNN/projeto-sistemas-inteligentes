@@ -16,6 +16,8 @@ class Agent{
         this.currentFrontier=[createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
         this.visited = [];
         this.horaInicial = 0;
+        this.came_from = {};
+        this.path = [];
     }
 
     run(terrain){
@@ -68,9 +70,10 @@ class Agent{
                 if(terrain.board[vizinho.x][vizinho.y]!=OBSTACLE){
                     if(!this.visited.find(item => item.x===vizinho.x && item.y===vizinho.y)){
                         terrain.board[vizinho.x][vizinho.y] = VISITED; // pintando o quadrado (depois podemos colocar a cor dependendo do tipo de quadrado)
-                        console.log("Pintou o quadrado " + vizinho);
+                        //console.log("Pintou o quadrado " + vizinho);
                         this.currentFrontier.push(vizinho);
                         this.visited.push(vizinho); // dizemos que esse vizinho ja foi pintado
+                        this.came_from[vizinho.x + "," + vizinho.y] = pixel.x + "," + pixel.y; // dizemos que esse vizinho veio do pixel atual
                     }
                 }
             }
@@ -101,18 +104,32 @@ class Agent{
     }
 
     eat(f) {
-        let food = f.getFood();
+        let food = f.getFood(); // food eh a lista de todas as comidas
+        //console.log("Food: " + food);
         // Are we touching any food objects?
         for (let i = food.length - 1; i >= 0; i--) {
-          let foodLocation = food[i];
-          let d = p5.Vector.dist(this.position, foodLocation);
-          if (d < this.r/2) {
-            this.health += 100;
-            food.splice(i, 1);
-            this.score += 1;
-            this.ordem += 1;
-            console.log("Placar do agente grupo 2: " + this.score);
-          }
+            if(this.visited.find(item => item.x===food[i].x/GRID_SIZE && item.y===food[i].y/GRID_SIZE)){
+                // console.log("Encontrou comida");
+
+                this.path = [];
+                let current = food[i].x/GRID_SIZE + "," + food[i].y/GRID_SIZE;
+                // console.log("Food: " + food[i].x + "," + food[i].y);
+                // console.log(this.came_from[current]);
+
+                while(current != this.position.x/GRID_SIZE + "," + this.position.y/GRID_SIZE){
+                    console.log("Current: " + current);
+                    console.log(this.position.x + "," + this.position.y);
+                    this.path.push(current);
+                    current = this.came_from[current];
+                }
+
+                this.path.push(this.position.x/GRID_SIZE + "," + this.position.y/GRID_SIZE);
+                this.path.reverse();
+
+                console.log("Path: " + this.path);
+
+            }
+
         }
     }
 
@@ -125,26 +142,26 @@ class Agent{
 
     update(terrain) {
 
-        // this.bfsOnce(terrain);
-
-        // const aux = await this.delay(1000000);
-        // console.log("Esperando");
-
-        // this.bfsOnce(terrain);
-
-        if(this.debugFlag){
+        if(this.debugFlag && this.path.length == 0){
             this.bfsOnce(terrain);
             this.debugFlag = false;
-            console.log("Primeira execução");
+            //console.log("Primeira execução");
         }
         
         let horaAtual = millis();
-        console.log("Hora atual: " + horaAtual);
+        //console.log("Hora atual: " + horaAtual);
 
-        if(horaAtual - this.horaInicial > 3000.0){
+        if(horaAtual - this.horaInicial > 1000.0 && this.path.length == 0){
             this.bfsOnce(terrain);
-            console.log("Segunda execução");
+            //console.log("Segunda execução");
             this.horaInicial = horaAtual;
+        }
+
+        if(this.path.length > 0){
+            let next = this.path.shift();
+            let nextPixel = createVector(next.split(",")[0]*GRID_SIZE, next.split(",")[1]*GRID_SIZE);
+            this.velocity = p5.Vector.sub(nextPixel, this.position);
+            this.velocity.setMag(this.speed);
         }
     }
 
