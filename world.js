@@ -23,7 +23,7 @@ class World {
       // All bloops run and eat
       let b = this.agents[i];
       b.run(this.terrain);
-      b.eat(this.food);
+      b.eat(this.food, this.terrain);
     }
   }
   

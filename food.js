@@ -32,7 +32,7 @@ class Food {
       }
   
       // There's a small chance food will appear randomly
-      if (random(1) < 0.001) {
+      if (random(1) < 0.004) {
         this.food.push(createVector(floor(random(0, floor(width / GRID_SIZE))) * GRID_SIZE,
                                     floor(random(0, floor(height / GRID_SIZE))) * GRID_SIZE));
       }

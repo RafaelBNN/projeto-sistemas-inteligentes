@@ -54,6 +54,11 @@ class Agent{
 
     bfsOnce(terrain){
         let frontier = [...this.currentFrontier];
+
+        for(let pixel of frontier){
+            terrain.board[pixel.x][pixel.y] = VISITED; 
+        }
+
         for(let pixel of frontier){
             let vizinhos = this.getNeighbors(pixel); // vizinhos recebe a lista de vetores com os vizinhos
             this.currentFrontier.shift();
@@ -99,7 +104,7 @@ class Agent{
         return neighbors;
     }
 
-    eat(f) {
+    eat(f, t) {
         let food = f.getFood(); // food eh a lista de todas as comidas
         //console.log("Food: " + food);
         // Are we touching any food objects?
@@ -107,15 +112,20 @@ class Agent{
             if(this.visited.find(item => item.x===food[i].x/GRID_SIZE && item.y===food[i].y/GRID_SIZE)){
                 // console.log("Encontrou comida");
                 this.comida = i;
-
+                t.generateTerrain();
+            
                 this.path = [];
                 let current = food[i].x/GRID_SIZE + "," + food[i].y/GRID_SIZE;
                 // console.log("Food: " + food[i].x + "," + food[i].y);
                 // console.log(this.came_from[current]);
 
                 while(current != this.position.x/GRID_SIZE + "," + this.position.y/GRID_SIZE){
+                    if (this.path.size > 1000) {
+                        break;
+                    }
                     console.log("Current: " + current);
                     console.log(this.position.x + "," + this.position.y);
+                    console.log(this.path);
                     this.path.push(current);
                     current = this.came_from[current];
                 }

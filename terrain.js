@@ -65,13 +65,12 @@ class Terrain {
         else if (noise_val < 0.4) {
           this.board[i][j] = MUD;
         }
-        else {
+        else if (noise_val < 0.80) {
             this.board[i][j] = SAND;
         }
-        
-        // if(chanceObstacle < 0.1){
-        //   this.board[i][j] = OBSTACLE;
-        // }
+        else{
+          this.board[i][j] = OBSTACLE;
+        }
       }
     }
   }
