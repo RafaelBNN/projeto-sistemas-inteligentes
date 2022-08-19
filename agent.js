@@ -23,10 +23,16 @@ class Agent{
         this.comeuFlag = false;
         this.comida = 0;
         this.initialBoard = null;
+        this.flag = true;
     }
 
     run(terrain){
-        this.initialBoard = [...terrain.board];
+        if(this.flag){
+            //this.initialBoard = [...terrain.board];
+            this.initialBoard = terrain.board.map(row => [...row]);
+            this.flag = false;
+        }
+        
         this.update(terrain);
         this.display();
         this.borders();
@@ -161,15 +167,14 @@ class Agent{
             this.horaInicial = horaAtual;
         }
 
-        if(this.path.length > 0 && horaAtual - this.horaInicial > (50*terrain.board[this.position.x/GRID_SIZE][this.position.y/GRID_SIZE])){
+        if(this.path.length > 0 && (horaAtual - this.horaInicial > (100*terrain.board[this.position.x/GRID_SIZE][this.position.y/GRID_SIZE]))){
             this.path.shift();
             let next = this.path.shift();
             this.position = createVector(next.split(",")[0]*GRID_SIZE, next.split(",")[1]*GRID_SIZE);
             this.horaInicial = horaAtual;
             if(this.path.length==0){
                 this.comeuFlag = true;
-                terrain.board = this.initialBoard;
-                console.log("pintou de novo");
+                terrain.board = this.initialBoard; // reseta o board
                 this.startAlgorithm = true;
             }
         }
