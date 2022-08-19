@@ -56,7 +56,7 @@ class Terrain {
         if (noise_val < 0.3) {
           this.board[i][j] = WATER;
         }
-        else if (noise_val < 0.4) {
+        else if (noise_val < 0.5) {
           this.board[i][j] = MUD;
         }
         else {

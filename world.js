@@ -1,11 +1,8 @@
 class World {
-  constructor(num) {
+  constructor() {
     this.food = new Food(2);
     this.agents = []; // An array for all creatures
-    //this.agents.push(new Agent(createVector(0,0)));
     this.terrain = new Terrain();
-    // let l = createVector(random(width), random(height));
-    //let l = createVector(int(random(0, this.terrain.columns)), int(random(0, this.terrain.rows)));
     let l = createVector(12,10);
     this.agents.push(new Agent(l));
     this.terrain.generateTerrain();

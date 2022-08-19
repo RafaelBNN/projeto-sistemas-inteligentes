@@ -15,6 +15,7 @@ class Agent{
         this.debugFlag = true;
         this.currentFrontier=[createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
         this.visited = [];
+        this.horaInicial = 0;
     }
 
     run(terrain){
@@ -59,61 +60,22 @@ class Agent{
     }
 
     bfsOnce(terrain){
-        let frontier = this.currentFrontier;
+        let frontier = [...this.currentFrontier];
         for(let pixel of frontier){
-            let vizinhos = this.getNeighbors(pixel);
+            let vizinhos = this.getNeighbors(pixel); // vizinhos recebe a lista de vetores com os vizinhos
+            this.currentFrontier.shift();
             for(let vizinho of vizinhos){
-                terrain.board[vizinho.x][vizinho.y] = VISITED; // pintando o quadrado (depois podemos colocar a cor dependendo do tipo de quadrado)
-                console.log("Pintou o quadrado " + vizinho);
-                //this.currentFrontier.push(vizinho);
-            }
-        }
-    }
-
-    bfs(terrain){
-
-        let discretePosition = createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE));
-        
-        let frontier = [];
-        frontier.push(discretePosition);
-        console.log(frontier); //debug
-
-        let reached = [];
-        console.log(reached); //debug
-        reached.push(discretePosition);
-        console.log(reached); //debug
-
-        terrain.board[discretePosition.x][discretePosition.y] = VISITED;
-
-        while(frontier.length > 0){
-
-            let current = frontier.shift(); // avanca a fila, tirando o primeiro elemento
-            let neighbors = this.getNeighbors(current); // retorna uma lista de vetores com os vizinhos
-            
-            for(let i = 0; i < neighbors.length; i++){
-                if(!reached.includes(neighbors[i])){
-                    terrain.board[neighbors[i].x][neighbors[i].y] = VISITED; // pintando o quadrado (depois podemos colocar a cor dependendo do tipo de quadrado)
-                    console.log("Pintou o quadrado " + neighbors[i]);
-                    //frontier.push(neighbors[i]); // esse vizinho agora esta na fronteira
-                    reached.push(neighbors[i]); // dizemos que esse vizinho ja foi pintado
-                    console.log(reached);
+                if(terrain.board[vizinho.x][vizinho.y]!=OBSTACLE){
+                    if(!this.visited.find(item => item.x===vizinho.x && item.y===vizinho.y)){
+                        terrain.board[vizinho.x][vizinho.y] = VISITED; // pintando o quadrado (depois podemos colocar a cor dependendo do tipo de quadrado)
+                        console.log("Pintou o quadrado " + vizinho);
+                        this.currentFrontier.push(vizinho);
+                        this.visited.push(vizinho); // dizemos que esse vizinho ja foi pintado
+                    }
                 }
             }
-
         }
     }
-
-    // bfs(terrain){
-    //     let discretePosition = createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE));
-    //     let current = discretePosition.copy(); // iniciamos com a posicao de grid atual
-
-    //     let frontier = new Queue();
-    //     frontier.enqueue(current);
-
-    //     for(let i=0;i<frontier.length;i++){
-
-    //     }
-    // }
 
     getNeighbors(current){ //retorna lista de vetores com as coordenadas discretas dos vizinhos
         let neighbors = [];
@@ -162,23 +124,28 @@ class Agent{
     }
 
     update(terrain) {
-        // //Simple movement based on perlin noise
-        // let vx = map(1, 0, 1, -this.maxspeed, this.maxspeed);
-        // let vy = map(0.5, 0, 1, -this.maxspeed, this.maxspeed);
-        // let velocity = createVector(vx, vy);
-
-        // this.position.add(velocity);
-        // // Death always looming
-        // this.health -= 0.2;
-        
-        //if(this.debugFlag){
-          //  this.bfsOnce(terrain);
-            //this.debugFlag = false;
-        //}
-        this.bfs(terrain)
 
         // this.bfsOnce(terrain);
 
+        // const aux = await this.delay(1000000);
+        // console.log("Esperando");
+
+        // this.bfsOnce(terrain);
+
+        if(this.debugFlag){
+            this.bfsOnce(terrain);
+            this.debugFlag = false;
+            console.log("Primeira execução");
+        }
+        
+        let horaAtual = millis();
+        console.log("Hora atual: " + horaAtual);
+
+        if(horaAtual - this.horaInicial > 3000.0){
+            this.bfsOnce(terrain);
+            console.log("Segunda execução");
+            this.horaInicial = horaAtual;
+        }
     }
 
     display() {
@@ -193,6 +160,10 @@ class Agent{
         } else {
             return false;
         }
+    }
+
+    delay(time) {
+        return new Promise(resolve => setTimeout(resolve, time));
     }
 
 }
