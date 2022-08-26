@@ -20,6 +20,7 @@ class Agent{
         this.comida = 0;
         this.initialBoard = null;
         this.flag = true;
+        this.dfsDirection = 0;
     }
 
     run(terrain){
@@ -59,7 +60,7 @@ class Agent{
     }
 
     dfsOnce(terrain){
-        let frontier = [...this.currentFrontier];
+        let frontier = [...this.currentFrontier]; // currentFrontier eh posicao discreta dos pixels da fronteira
         for(let pixel of frontier){
             let vizinhos = this.getNeighborsDfs(pixel); // vizinhos recebe a lista de vetores com os vizinhos
             this.currentFrontier.pop();
@@ -109,22 +110,66 @@ class Agent{
         let neighbors = [];
         let x = current.x;
         let y = current.y;
-        if(x > 0){
+
+        if(x > 0 && !this.visited.find(item => item.x===x-1 && item.y===y)){
+            console.log("x>0");
             neighbors.push(createVector(x-1, y));
             //neighbors.push(terrain.board[x-1][y]);
         }
-        else if(y > 0){
+        else if(y > 0 && !this.visited.find(item => item.x===x && item.y===y-1)){
+            console.log("y>0");
             neighbors.push(createVector(x, y-1));
             //neighbors.push(terrain.board[x][y-1]);
         }
-        else if(x < width/GRID_SIZE - 1){
+        else if(x < width/GRID_SIZE - 1 && !this.visited.find(item => item.x===x+1 && item.y===y)){
+            console.log("x<width");
             neighbors.push(createVector(x+1, y));
             //neighbors.push(terrain.board[x+1][y]);
         }
-        else if(y < height/GRID_SIZE - 1){
+        else if(y < height/GRID_SIZE - 1 && !this.visited.find(item => item.x===x && item.y===y+1)){
+            console.log("y<height");
             neighbors.push(createVector(x, y+1));
             //neighbors.push(terrain.board[x][y+1]);
         }
+
+        // if(this.dfsDirection==0){
+        //     console.log("x>0");
+        //     if(x > 1){
+        //         neighbors.push(createVector(x-1, y));
+        //     }
+        //     else{
+        //         this.dfsDirection = 1;
+        //     }
+        // }
+        // else if(this.dfsDirection==1){
+        //     console.log("y>0");
+        //     if(y > 0){
+        //         neighbors.push(createVector(x, y-1));
+        //     }
+        //     else{
+        //         this.dfsDirection = 2;
+        //     }
+        // }
+        // else if(this.dfsDirection==2){
+        //     console.log("x<width");
+        //     if(x < width/GRID_SIZE - 1){
+        //         neighbors.push(createVector(x+1, y));
+        //     }
+        //     else{
+        //         this.dfsDirection = 3;
+        //     }
+        // }
+        // else if(this.dfsDirection==3){
+        //     console.log("y<height");
+        //     if(y < height/GRID_SIZE - 1){
+        //         neighbors.push(createVector(x, y+1));
+        //     }
+        //     else{
+        //         this.dfsDirection = 0;
+        //     }
+        // }
+
+
         return neighbors;
     }
 
@@ -177,7 +222,7 @@ class Agent{
     update(terrain) {
 
         if(this.startAlgorithm && this.path.length == 0){
-            this.bfsOnce(terrain);
+            this.dfsOnce(terrain);
             this.startAlgorithm = false;
             //console.log("Primeira execução");
         }
@@ -186,7 +231,7 @@ class Agent{
         //console.log("Hora atual: " + horaAtual);
 
         if(horaAtual - this.horaInicial > 50.0 && this.path.length == 0){
-            this.bfsOnce(terrain);
+            this.dfsOnce(terrain);
             //console.log("Segunda execução");
             this.horaInicial = horaAtual;
         }
