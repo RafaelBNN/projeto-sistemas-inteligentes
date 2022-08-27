@@ -20,12 +20,11 @@ class Agent{
         this.comida = 0;
         this.initialBoard = null;
         this.flag = true;
-        this.dfsDirection = 0;
     }
 
     run(terrain){
+
         if(this.flag){
-            //this.initialBoard = [...terrain.board];
             this.initialBoard = terrain.board.map(row => [...row]);
             this.flag = false;
         }
@@ -112,80 +111,30 @@ class Agent{
         let y = current.y;
 
         if(x > 0 && !this.visited.find(item => item.x===x-1 && item.y===y)){
-            console.log("x>0");
             neighbors.push(createVector(x-1, y));
-            //neighbors.push(terrain.board[x-1][y]);
         }
         else if(y > 0 && !this.visited.find(item => item.x===x && item.y===y-1)){
-            console.log("y>0");
             neighbors.push(createVector(x, y-1));
-            //neighbors.push(terrain.board[x][y-1]);
         }
         else if(x < width/GRID_SIZE - 1 && !this.visited.find(item => item.x===x+1 && item.y===y)){
-            console.log("x<width");
             neighbors.push(createVector(x+1, y));
-            //neighbors.push(terrain.board[x+1][y]);
         }
         else if(y < height/GRID_SIZE - 1 && !this.visited.find(item => item.x===x && item.y===y+1)){
-            console.log("y<height");
             neighbors.push(createVector(x, y+1));
-            //neighbors.push(terrain.board[x][y+1]);
         }
-
-        // if(this.dfsDirection==0){
-        //     console.log("x>0");
-        //     if(x > 1){
-        //         neighbors.push(createVector(x-1, y));
-        //     }
-        //     else{
-        //         this.dfsDirection = 1;
-        //     }
-        // }
-        // else if(this.dfsDirection==1){
-        //     console.log("y>0");
-        //     if(y > 0){
-        //         neighbors.push(createVector(x, y-1));
-        //     }
-        //     else{
-        //         this.dfsDirection = 2;
-        //     }
-        // }
-        // else if(this.dfsDirection==2){
-        //     console.log("x<width");
-        //     if(x < width/GRID_SIZE - 1){
-        //         neighbors.push(createVector(x+1, y));
-        //     }
-        //     else{
-        //         this.dfsDirection = 3;
-        //     }
-        // }
-        // else if(this.dfsDirection==3){
-        //     console.log("y<height");
-        //     if(y < height/GRID_SIZE - 1){
-        //         neighbors.push(createVector(x, y+1));
-        //     }
-        //     else{
-        //         this.dfsDirection = 0;
-        //     }
-        // }
-
 
         return neighbors;
     }
 
     eat(f) {
         let food = f.getFood(); // food eh a lista de todas as comidas
-        //console.log("Food: " + food);
-        // Are we touching any food objects?
-        for (let i = food.length - 1; i >= 0; i--) {
-            if(this.visited.find(item => item.x===food[i].x/GRID_SIZE && item.y===food[i].y/GRID_SIZE)){
-                // console.log("Encontrou comida");
+        
+        for (let i = food.length - 1; i >= 0; i--) { // percorre a lista de comidas
+            if(this.visited.find(item => item.x===food[i].x/GRID_SIZE && item.y===food[i].y/GRID_SIZE)){ // se a comida esta na lista de visitados
                 this.comida = i;
 
                 this.path = [];
                 let current = food[i].x/GRID_SIZE + "," + food[i].y/GRID_SIZE;
-                // console.log("Food: " + food[i].x + "," + food[i].y);
-                // console.log(this.came_from[current]);
 
                 while(current != this.position.x/GRID_SIZE + "," + this.position.y/GRID_SIZE){
                     console.log("Current: " + current);
@@ -193,12 +142,13 @@ class Agent{
                     this.path.push(current);
                     current = this.came_from[current];
                 }
-
                 this.path.push(current);
-
                 this.path.reverse();
 
+                console.log("Achou comida");
                 console.log("Path: " + this.path);
+
+                this.visited = []; // zera a lista de visitados logo aqui pra que ele nao entre nesse if de novo
 
             }
 
@@ -236,17 +186,18 @@ class Agent{
             this.horaInicial = horaAtual;
         }
 
-        if(this.path.length > 0 && (horaAtual - this.horaInicial > (40*terrain.board[this.position.x/GRID_SIZE][this.position.y/GRID_SIZE]))){
+        //if(this.path.length > 0 && (horaAtual - this.horaInicial > (40*terrain.board[this.position.x/GRID_SIZE][this.position.y/GRID_SIZE]))){
+        if(this.path.length > 0 && (horaAtual - this.horaInicial > 40)){
             this.path.shift();
             let next = this.path.shift();
             this.position = createVector(next.split(",")[0]*GRID_SIZE, next.split(",")[1]*GRID_SIZE);
             this.horaInicial = horaAtual;
-            if(this.path.length==0){
+            if(this.path.length==1){
                 this.comeuFlag = true;
                 terrain.board = this.initialBoard; // reseta o board
                 this.startAlgorithm = true;
                 this.currentFrontier = [createVector(floor(this.position.x/GRID_SIZE), floor(this.position.y/GRID_SIZE))];
-                this.visited = [];
+                // this.visited = [];
                 this.came_from = {};
                 this.comida = 0;
             }
