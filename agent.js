@@ -20,6 +20,7 @@ class Agent{
         this.comida = 0;
         this.initialBoard = null;
         this.flag = true;
+        this.hasFoodinRadar = true;
     }
 
     run(terrain){
@@ -34,24 +35,6 @@ class Agent{
         this.borders();
     }
 
-    dfs(){
-        let stack = [];
-        let visited = [];
-        let current = this.position;
-        stack.push(current);
-        visited.push(current);
-        while(stack.length > 0){
-            current = stack.pop();
-            let neighbors = this.getNeighbors(current);
-            for(let i = 0; i < neighbors.length; i++){
-                if(!visited.includes(neighbors[i])){
-                    stack.push(neighbors[i]);
-                    visited.push(neighbors[i]);
-                }
-            }
-        }
-    }
-
     bfsOnce(terrain){
         let frontier = [...this.currentFrontier];
 
@@ -60,6 +43,7 @@ class Agent{
         }
 
         for(let pixel of frontier){
+                
             let vizinhos = this.getNeighbors(pixel); // vizinhos recebe a lista de vetores com os vizinhos
             this.currentFrontier.shift();
             for(let vizinho of vizinhos){
@@ -70,8 +54,6 @@ class Agent{
                             case WATER: terrain.board[vizinho.x][vizinho.y] = VISITED_WATER; break;
                             case MUD: terrain.board[vizinho.x][vizinho.y] = VISITED_MUD; break;
                         }
-                        //terrain.board[vizinho.x][vizinho.y] = VISITED; 
-                        //console.log("Pintou o quadrado " + vizinho);
                         this.currentFrontier.push(vizinho);
                         this.visited.push(vizinho); // dizemos que esse vizinho ja foi pintado
                         this.came_from[vizinho.x + "," + vizinho.y] = pixel.x + "," + pixel.y; // dizemos que esse vizinho veio do pixel atual
@@ -87,30 +69,24 @@ class Agent{
         let y = current.y;
         if(x > 0){
             neighbors.push(createVector(x-1, y));
-            //neighbors.push(terrain.board[x-1][y]);
         }
         if(x < width/GRID_SIZE - 1){
             neighbors.push(createVector(x+1, y));
-            //neighbors.push(terrain.board[x+1][y]);
         }
         if(y > 0){
             neighbors.push(createVector(x, y-1));
-            //neighbors.push(terrain.board[x][y-1]);
         }
         if(y < height/GRID_SIZE - 1){
             neighbors.push(createVector(x, y+1));
-            //neighbors.push(terrain.board[x][y+1]);
         }
         return neighbors;
     }
 
     eat(f, t) {
         let food = f.getFood(); // food eh a lista de todas as comidas
-        //console.log("Food: " + food);
-        // Are we touching any food objects?
+
         for (let i = food.length - 1; i >= 0; i--) {
-            if(this.visited.find(item => item.x===food[i].x/GRID_SIZE && item.y===food[i].y/GRID_SIZE)){
-                // console.log("Encontrou comida");
+            if(this.hasFoodinRadar && this.visited.find(item => item.x===food[i].x/GRID_SIZE && item.y===food[i].y/GRID_SIZE)){
                 this.comida = i;
                 t.generateTerrain();
             
@@ -136,6 +112,8 @@ class Agent{
 
                 console.log("Path: " + this.path);
 
+                this.hasFoodinRadar = false;
+
             }
 
         }
@@ -144,6 +122,7 @@ class Agent{
             this.path.shift();
             food.splice(this.comida, 1);
             this.comeuFlag = false;
+            this.hasFoodinRadar = true;
         }
         
     }
@@ -173,7 +152,7 @@ class Agent{
         }
 
         if(this.path.length > 0 && (horaAtual - this.horaInicial > (40*terrain.board[this.position.x/GRID_SIZE][this.position.y/GRID_SIZE]))){
-            this.path.shift();
+            //this.path.shift();
             let next = this.path.shift();
             this.position = createVector(next.split(",")[0]*GRID_SIZE, next.split(",")[1]*GRID_SIZE);
             this.horaInicial = horaAtual;
